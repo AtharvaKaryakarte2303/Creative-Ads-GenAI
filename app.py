@@ -3,9 +3,10 @@ from PIL import Image
 
 from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
-from validation.validate_creative import validate_creative
-from autofix.autofix_creative import auto_fix_creative
+from utils.validation import validate_creative
+from utils.autofix import auto_fix_creative
 from rules.tesco_rules import tesco_rules
+
 
 def process_image(img):
     boxes = run_ocr(img)
@@ -16,18 +17,20 @@ def process_image(img):
     if violations:
         fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
         return fixed, violations
-    else:
-        return img, "Creative already compliant"
 
-interface = gr.Interface(
+    return img, ["No violations 🎉"]
+
+
+iface = gr.Interface(
     fn=process_image,
-    inputs=gr.Image(type="pil", label="Upload Ad Creative"),
+    inputs=gr.Image(type="pil", label="Upload Creative"),
     outputs=[
-        gr.Image(type="pil", label="Fixed Creative"),
-        gr.JSON(label="Rule Violations")
+        gr.Image(label="Fixed Creative"),
+        gr.JSON(label="Validation Report")
     ],
-    title="Creative Ads Gen AI",
-    description="AI system that validates and auto-fixes ad creatives using brand rules"
+    title="Creative Ads GenAI – Tesco Rules Engine",
+    description="Upload an ad creative. The system validates and auto-fixes it based on brand rules."
 )
 
-interface.launch()
+if __name__ == "__main__":
+    iface.launch()
