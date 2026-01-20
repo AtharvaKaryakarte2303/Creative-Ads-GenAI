@@ -5,7 +5,7 @@ from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
 from core.validation import validate_creative
 from core.autofix import auto_fix_creative
-from rules.tesco_rules import tesco_rules
+from rules.tesco_rules import tesco
 
 
 def process_image(img):
