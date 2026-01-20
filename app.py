@@ -5,17 +5,17 @@ from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
 from core.validation import validate_creative
 from core.autofix import auto_fix_creative
-from rules.tesco_rules import tesco
+from rules.tesco import tesco
 
 
 def process_image(img):
     boxes = run_ocr(img)
     pack_bbox = detect_packshot(img)
 
-    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+    violations = validate_creative(img, boxes, pack_bbox, tesco)
 
     if violations:
-        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
+        fixed = auto_fix_creative(img.copy(), boxes, tesco)
         return fixed, violations
 
     return img, ["No violations 🎉"]
