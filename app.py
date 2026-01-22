@@ -13,8 +13,8 @@ def load_rules(path="rules/tesco.json"):
 
 def process_image(img):
     if img is None:
-        return None, {"error": "No image uploaded"}
-        
+        return None, "{}"
+
     tesco_rules = load_rules()
     boxes = run_ocr(img)
     pack_bbox = detect_packshot(img)
@@ -23,9 +23,9 @@ def process_image(img):
 
     if violations:
         fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
-        return fixed, {"violations": violations}
+        return fixed, json.dumps(violations, indent=2)
 
-    return img, {"status": "No violations 🎉"}
+    return img, json.dumps({"status": "No violations 🎉"}, indent=2)
 
 
 iface = gr.Interface(
@@ -33,7 +33,7 @@ iface = gr.Interface(
     inputs=gr.Image(type="pil", label="Upload Creative"),
     outputs=[
         gr.Image(label="Fixed Creative"),
-        gr.JSON(label="Validation Report")
+        gr.Code(label="Validation Report", language="json")
     ],
     title="Creative Ads GenAI – Tesco Rules Engine",
     description="Upload an ad creative. The system validates and auto-fixes it based on brand rules."
