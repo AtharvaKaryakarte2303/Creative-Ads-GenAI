@@ -12,6 +12,9 @@ def load_rules(path="rules/tesco.json"):
         return json.load(f)
 
 def process_image(img):
+    if img is None:
+        return None, {"error": "No image uploaded"}
+        
     tesco_rules = load_rules()
     boxes = run_ocr(img)
     pack_bbox = detect_packshot(img)
@@ -20,9 +23,9 @@ def process_image(img):
 
     if violations:
         fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
-        return fixed, violations
+        return fixed, {"violations": violations}
 
-    return img, ["No violations 🎉"]
+    return img, {"status": "No violations 🎉"}
 
 
 iface = gr.Interface(
