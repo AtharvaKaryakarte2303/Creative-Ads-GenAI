@@ -1,4 +1,32 @@
 import gradio as gr
+import json
+from PIL import Image
+
+from utils.run_ocr import run_ocr
+from utils.detect_packshot import detect_packshot
+from core.validation import validate_creative
+from core.autofix import auto_fix_creative
+
+def load_rules(path="rules/tesco.json"):
+    with open(path, "r") as f:
+        return json.load(f)
+
+def process_image(img):
+    if img is None:
+        return None, "{}"
+
+    tesco_rules = load_rules()
+    boxes = run_ocr(img)
+    pack_bbox = detect_packshot(img)
+
+    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+
+    if violations:
+        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
+        return fixed, json.dumps(violations, indent=2)
+
+    return img, json.dumps({"status": "No violations 🎉"}, indent=2)
+
 
 iface = gr.Interface(
     fn=process_image,
