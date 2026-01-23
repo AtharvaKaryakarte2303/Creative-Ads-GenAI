@@ -1,3 +1,5 @@
+import gradio as gr
+
 iface = gr.Interface(
     fn=process_image,
     inputs=gr.Image(type="pil", label="Upload Creative"),
