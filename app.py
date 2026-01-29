@@ -12,20 +12,30 @@ def load_rules(path="rules/tesco.json"):
         return json.load(f)
 
 def process_image(img):
-    if img is None:
-        return None, "{}"
+    try:
+        print("✅ Image received:", type(img))
 
-    tesco_rules = load_rules()
-    boxes = run_ocr(img)
-    pack_bbox = detect_packshot(img)
+        tesco_rules = load_rules()
+        print("✅ Rules loaded")
 
-    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+        boxes = run_ocr(img)
+        print("✅ OCR boxes:", boxes)
 
-    if violations:
-        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
-        return fixed, json.dumps(violations, indent=2)
+        pack_bbox = detect_packshot(img)
+        print("✅ Packshot:", pack_bbox)
 
-    return img, json.dumps({"status": "No violations 🎉"}, indent=2)
+        violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+        print("✅ Violations:", violations)
+
+        if violations:
+            fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
+            return fixed, json.dumps(violations, indent=2)
+
+        return img, json.dumps({"status": "No violations 🎉"}, indent=2)
+
+    except Exception as e:
+        print("🔥 ERROR:", str(e))
+        return img, json.dumps({"error": str(e)}, indent=2)
 
 
 iface = gr.Interface(
