@@ -18,23 +18,31 @@ def load_rules(path="rules/tesco.json"):
     with open(path, "r") as f:
         raw = json.load(f)
 
-    # 🔥 sanitize booleans
-    raw["rules"]["safe_zones"]["enabled"] = int(raw["rules"]["safe_zones"]["enabled"])
+    rules = raw.get("rules", {})
+
+    if "safe_zones" in rules and "enabled" in rules["safe_zones"]:
+        rules["safe_zones"]["enabled"] = int(rules["safe_zones"]["enabled"])
+
+    raw["rules"] = rules
     return raw
 
+
 def process_image(img):
-    tesco_rules = load_rules()
-    boxes = run_ocr(img)
-    pack_bbox = detect_packshot(img)
+    try:
+        tesco_rules = load_rules()
+        boxes = run_ocr(img)
+        pack_bbox = detect_packshot(img)
 
-    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+        violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
 
-    if violations:
-        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
-        return fixed, json.dumps(violations, indent=2)
+        if violations:
+            fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
+            return fixed, json.dumps(violations, indent=2)
 
-    return img, "No violations 🎉"
+        return img, "No violations 🎉"
 
+    except Exception as e:
+        return img, f"❌ Error: {str(e)}"
 
 
 with gr.Blocks() as demo:
