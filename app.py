@@ -2,6 +2,13 @@ import gradio as gr
 import json
 from PIL import Image
 
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = (
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+)
+
+
 from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
 from core.validation import validate_creative
