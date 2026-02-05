@@ -26,7 +26,7 @@ def load_rules(path="rules/tesco.json"):
     raw["rules"] = rules
     return raw
 
-
+TESCO_RULES = load_rules()
 def process_image(img):
     try:
         tesco_rules = load_rules()
