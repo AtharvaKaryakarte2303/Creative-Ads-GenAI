@@ -11,7 +11,7 @@ pytesseract.pytesseract.tesseract_cmd = (
 
 from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
-from utils.visualize import draw_violations
+from utils.visualise import draw_violations
 from core.validation import validate_creative
 from core.autofix import auto_fix_creative
 
