@@ -11,6 +11,7 @@ pytesseract.pytesseract.tesseract_cmd = (
 
 from utils.run_ocr import run_ocr
 from utils.detect_packshot import detect_packshot
+from utils.visualize import draw_violations
 from core.validation import validate_creative
 from core.autofix import auto_fix_creative
 
@@ -28,21 +29,19 @@ def load_rules(path="rules/tesco.json"):
 
 TESCO_RULES = load_rules()
 def process_image(img):
-    try:
-        tesco_rules = load_rules()
-        boxes = run_ocr(img)
-        pack_bbox = detect_packshot(img)
+    tesco_rules = load_rules()
+    boxes = run_ocr(img)
+    pack_bbox = detect_packshot(img)
 
-        violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
 
-        if violations:
-            fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
-            return fixed, json.dumps(violations, indent=2)
+    if violations:
+        visual = draw_violations(img.copy(), violations, pack_bbox)
+        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
 
-        return img, "No violations 🎉"
+        return visual, json.dumps(violations, indent=2)
 
-    except Exception as e:
-        return img, f"❌ Error: {str(e)}"
+    return img, "No violations 🎉"
 
 
 with gr.Blocks() as demo:
