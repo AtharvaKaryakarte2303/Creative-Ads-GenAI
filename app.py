@@ -33,15 +33,15 @@ def process_image(img):
     boxes = run_ocr(img)
     pack_bbox = detect_packshot(img)
 
-    violations = validate_creative(img, boxes, pack_bbox, tesco_rules)
+    # FORCE a violation for testing
+    violations = [{
+        "type": "test_violation",
+        "bbox": [50, 50, 300, 150]
+    }]
 
-    if violations:
-        visual = draw_violations(img.copy(), violations, pack_bbox)
-        fixed = auto_fix_creative(img.copy(), boxes, tesco_rules)
+    visual = draw_violations(img.copy(), violations, pack_bbox)
 
-        return visual, json.dumps(violations, indent=2)
-
-    return img, "No violations 🎉"
+    return visual, json.dumps(violations, indent=2)
 
 
 with gr.Blocks() as demo:
